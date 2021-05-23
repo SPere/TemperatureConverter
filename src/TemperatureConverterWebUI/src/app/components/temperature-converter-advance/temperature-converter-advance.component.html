@@ -1,0 +1,63 @@
+<div class="alert alert-primary" role="alert">
+    Note: In this component, the below actions are detected and the temperature conversion happens automatically, 
+    the user does not need to click the Convert button everytime.
+    <ul>
+        <li>When the user types a value and a pause is detected</li>
+        <li>When the user changes the from unit</li>
+        <li>When the user changes the to unit</li>
+    </ul>
+</div>
+<form >
+    <div class="mb-3 has-validation">
+        <label for="fromValue" class="form-label" >Enter a value to convert:</label>
+        <input id="fromValue" class="form-control" [formControl]="fromValue" type="number" [ngClass]="{'is-invalid': fromValue.invalid && (fromValue.dirty || fromValue.touched)}" />
+        <div *ngIf="fromValue.invalid 
+            && (fromValue.dirty || fromValue.touched)" class="invalid-feedback">
+            <div *ngIf="fromValue.errors?.required">
+                Please enter a valid number.
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="fromUnit" >Choose from unit:</label>
+        <select id="fromUnit" [formControl]="fromUnit" class="form-select">
+            <option 
+                *ngFor="let temperatureUnit of temperatureUnits" 
+                [ngValue]="temperatureUnit" > 
+                {{temperatureUnit}}
+            </option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="toUnit">Choose to unit:</label>
+        <select id="toUnit" [formControl]="toUnit" class="form-select">
+            <option 
+                *ngFor="let temperatureUnit of temperatureUnits" 
+                [ngValue]="temperatureUnit" > 
+                {{temperatureUnit}}
+            </option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-primary" type="button" (click)="click()" [attr.disabled]="loading$ ?'true':null" >
+            <span *ngIf="loading$">
+                Converting ...
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </span>
+            <span *ngIf="!loading$">
+                Convert
+            </span>
+        </button>
+        <button class="btn btn-secondary ms-3" type="button" (click)="reset()">
+            Reset
+        </button>
+    </div>
+    <div class="primary" *ngIf="(toValue$ | async) as toValue">
+        {{fromValue.value}} {{fromUnit.value}}
+        = <span class="text-success">{{toValue}}</span> {{toUnit.value}}
+    </div>
+    <div class="text-danger" *ngIf="!loading$ && errorMsg">
+        Sorry we encountered an error!
+        <br/>({{errorMsg}})
+    </div>
+</form>
